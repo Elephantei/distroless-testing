@@ -1,12 +1,11 @@
-# FROM node:16 AS build-env
-FROM ubuntu:16.04 
-ADD . /app
+FROM node:16 AS build-env
+
+COPY . /app
 WORKDIR /app
-RUN npm install
 
-# FROM gcr.io/distroless/nodejs:16
-# COPY --from=build-env /app /app
-# WORKDIR /app
-EXPOSE 3000
-CMD ["node", "hello_express.js"]
+RUN npm ci --only=production
 
+FROM gcr.io/distroless/nodejs:16
+COPY --from=build-env /app /app
+WORKDIR /app
+CMD ["hello.js"]
